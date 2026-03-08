@@ -1,84 +1,113 @@
-# What is Counter-Strike: Global Offensive?
-Counter-Strike: Global Offensive (CS: GO) expands upon the team-based action gameplay that it pioneered when it was launched 19 years ago. CS: GO features new maps, characters, weapons, and game modes, and delivers updated versions of the classic CS content (de_dust2, etc.).
-This Docker image contains the dedicated server of the game.
+# CS:GO Dedicated Server Docker
 
->  [CS:GO](https://store.steampowered.com/app/4465480/CounterStrikeGlobal_Offensive/
+Counter-Strike: Global Offensive dedicated server running in Docker with automated builds and releases.
 
 <img src="https://1000logos.net/wp-content/uploads/2017/12/CSGO-Logo.png" alt="logo" width="300"/></img>
 
-# How to use this image
-## Hosting a simple game server
+## Quick Start
 
-Running on the *host* interface (recommended):<br/>
-```console
-$ docker run -d --net=host --name=csgo-dedicated -e SRCDS_TOKEN={YOURTOKEN} cm2network/csgo
+```bash
+docker run -d --net=host --name=csgo-server \
+  -e SRCDS_TOKEN={YOUR_TOKEN} \
+  ghcr.io/w1tsky/csgo:latest
 ```
 
-Running using a bind mount for data persistence on container recreation:
-```console
-$ mkdir -p $(pwd)/csgo-data
-$ chmod 777 $(pwd)/csgo-data # Makes sure the directory is writeable by the unprivileged container user
-$ docker run -d --net=host -v $(pwd)/csgo-data:/home/steam/csgo-dedicated/ --name=csgo-dedicated -e SRCDS_TOKEN={YOURTOKEN} cm2network/csgo
+**`SRCDS_TOKEN` is required for your server to be listed & reachable.**  
+Generate one here (AppID `730`): [Steam Game Server Account Management](https://steamcommunity.com/dev/managegameservers)
+
+## Usage
+
+### Host networking (recommended)
+
+```bash
+docker run -d --net=host --name=csgo-server \
+  -e SRCDS_TOKEN={YOUR_TOKEN} \
+  ghcr.io/w1tsky/csgo:latest
 ```
 
-Running multiple instances (increment SRCDS_PORT and SRCDS_TV_PORT):
-```console
-$ docker run -d --net=host --name=csgo-dedicated2 -e SRCDS_PORT=27016 -e SRCDS_TV_PORT=27021 -e SRCDS_TOKEN={YOURTOKEN} cm2network/csgo
+### With persistent data
+
+```bash
+mkdir -p $(pwd)/csgo-data
+chmod 777 $(pwd)/csgo-data
+docker run -d --net=host \
+  -v $(pwd)/csgo-data:/home/steam/csgo-dedicated/ \
+  --name=csgo-server \
+  -e SRCDS_TOKEN={YOUR_TOKEN} \
+  ghcr.io/w1tsky/csgo:latest
 ```
 
-`SRCDS_TOKEN` **is required to be listed & reachable. Generate one here using AppID `730`:**  
-[https://steamcommunity.com/dev/managegameservers](https://steamcommunity.com/dev/managegameservers)<br/><br/>
-`SRCDS_WORKSHOP_AUTHKEY` **is required to use workshop features:**  
-[https://steamcommunity.com/dev/apikey](https://steamcommunity.com/dev/apikey)<br/>
+### Multiple instances
 
-**It's also recommended to use "--cpuset-cpus=" to limit the game server to a specific core & thread.**<br/>
-**The container will automatically update the game on startup, so if there is a game update just restart the container.**
+```bash
+docker run -d --net=host --name=csgo-server-2 \
+  -e SRCDS_PORT=27016 \
+  -e SRCDS_TV_PORT=27021 \
+  -e SRCDS_TOKEN={YOUR_TOKEN} \
+  ghcr.io/w1tsky/csgo:latest
+```
 
-# Configuration
+### Using Docker Compose
+
+```bash
+docker-compose up -d
+```
+
 ## Environment Variables
-Feel free to overwrite these environment variables, using -e (--env): 
-```dockerfile
-SRCDS_TOKEN="changeme" (value is is required to be listed & reachable, retrieve token here (AppID 730): https://steamcommunity.com/dev/managegameservers)
-SRCDS_RCONPW="changeme" (value can be overwritten by csgo/cfg/server.cfg) 
-SRCDS_PW="changeme" (value can be overwritten by csgo/cfg/server.cfg) 
-SRCDS_PORT=27015
-SRCDS_TV_PORT=27020
-SRCDS_NET_PUBLIC_ADDRESS="0" (public facing ip, useful for local network setups)
-SRCDS_IP="0" (local ip to bind)
-SRCDS_LAN="0"
-SRCDS_FPSMAX=300
-SRCDS_TICKRATE=128
-SRCDS_MAXPLAYERS=14
-SRCDS_STARTMAP="de_dust2"
-SRCDS_REGION=3
-SRCDS_MAPGROUP="mg_active"
-SRCDS_GAMETYPE=0
-SRCDS_GAMEMODE=1
-SRCDS_HOSTNAME="New CSGO Server" (first launch only)
-SRCDS_WORKSHOP_START_MAP=0
-SRCDS_HOST_WORKSHOP_COLLECTION=0
-SRCDS_WORKSHOP_AUTHKEY="" (required to use host_workshop_map)
-SRCDS_ADDITIONAL_ARGS="" (Pass additional arguments to srcds. Make sure to escape correctly!)
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `SRCDS_TOKEN` | `0` | Steam Game Server Login Token (required for public servers) |
+| `SRCDS_RCONPW` | `changeme` | RCON password |
+| `SRCDS_PW` | `changeme` | Server password |
+| `SRCDS_PORT` | `27015` | Game port |
+| `SRCDS_TV_PORT` | `27020` | SourceTV port |
+| `SRCDS_CLIENT_PORT` | `27005` | Client port |
+| `SRCDS_NET_PUBLIC_ADDRESS` | `0` | Public IP (useful for NAT setups) |
+| `SRCDS_IP` | `0` | Local IP to bind |
+| `SRCDS_LAN` | `0` | LAN mode |
+| `SRCDS_FPSMAX` | `300` | Max FPS |
+| `SRCDS_TICKRATE` | `128` | Server tickrate |
+| `SRCDS_MAXPLAYERS` | `14` | Max players |
+| `SRCDS_STARTMAP` | `de_dust2` | Starting map |
+| `SRCDS_REGION` | `3` | Server region |
+| `SRCDS_MAPGROUP` | `mg_active` | Map group |
+| `SRCDS_GAMETYPE` | `0` | Game type |
+| `SRCDS_GAMEMODE` | `1` | Game mode |
+| `SRCDS_HOSTNAME` | `New csgo Server` | Server hostname |
+| `SRCDS_WORKSHOP_START_MAP` | `0` | Workshop map ID to start |
+| `SRCDS_HOST_WORKSHOP_COLLECTION` | `0` | Workshop collection ID |
+| `SRCDS_WORKSHOP_AUTHKEY` | `` | Steam API key for workshop |
+| `SRCDS_ADDITIONAL_ARGS` | `` | Additional launch arguments |
+
+## Image Variants
+
+| Image | Description |
+|-------|-------------|
+| `ghcr.io/w1tsky/csgo:latest` | Base CS:GO server |
+| `ghcr.io/w1tsky/csgo:metamod` | With [Metamod:Source](https://www.sourcemm.net) |
+| `ghcr.io/w1tsky/csgo:sourcemod` | With Metamod + [SourceMod](https://www.sourcemod.net) |
+
+## Configuration
+
+The image includes ESL config files. Edit server config:
+
+```bash
+docker exec -it csgo-server nano /home/steam/csgo-dedicated/csgo/cfg/server.cfg
 ```
-## Config
-The image contains a copy of the official ESL config files from [here](https://play.eslgaming.com/download/26251762/). You can edit the config using this command:
-```console
-$ docker exec -it csgo-dedicated nano /home/steam/csgo-dedicated/csgo/cfg/server.cfg
+
+See [Valve's documentation](https://developer.valvesoftware.com/wiki/Counter-Strike:_Global_Offensive_Dedicated_Servers#Advanced_Configuration) for advanced configuration.
+
+## Building
+
+```bash
+# Build steamcmd base
+docker build -t steamcmd:latest ./steamcmd
+
+# Build CS:GO server
+docker build -t csgo:latest --build-arg BASE_IMAGE=steamcmd:latest .
 ```
 
-If you want to learn more about configuring a CS:GO server check this [documentation](https://developer.valvesoftware.com/wiki/Counter-Strike:_Global_Offensive_Dedicated_Servers#Advanced_Configuration).
+## Credits
 
-# Image Variants:
-The `csgo` images come in three flavors, each designed for a specific use case.
-
-## `csgo:latest`
-This is the defacto image. If you are unsure about what your needs are, you probably want to use this one. It is a bare-minimum CSGO dedicated server containing no 3rd party plugins.<br/>
-
-## `csgo:metamod`
-This is a specialized image. It contains the plugin environment [Metamod:Source](https://www.sourcemm.net) which can be found in the addons directory. You can find additional plugins [here](https://www.sourcemm.net/plugins).
-
-## `csgo:sourcemod`
-This is another specialized image. It contains both [Metamod:Source](https://www.sourcemm.net) and the popular server plugin [SourceMod](https://www.sourcemod.net) which can be found in the addons directory. [SourceMod](https://www.sourcemod.net) supports a wide variety of additional plugins that can be found [here](https://www.sourcemod.net/plugins.php).
-
-# Contributors
-[![Contributors Display](https://badges.pufler.dev/contributors/CM2Walki/csgo?size=50&padding=5&bots=false)](https://github.com/CM2Walki/csgo/graphs/contributors)
+Based on [CM2Walki/CSGO](https://github.com/CM2Walki/CSGO).

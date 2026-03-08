@@ -84,13 +84,6 @@ fi
 # Believe it or not, if you don't do this srcds_run shits itself
 cd "${STEAMAPPDIR}"
 
-# Check if autoexec file exists
-autoexec_file="${STEAMAPPDIR}/${STEAMAPP}/cfg/autoexec.cfg"
-
-# Overwritable arguments
-
-
-# Build launch arguments array
 echo "[STEP 6/6] Launching srcds_run..."
 echo "----------------------------"
 
@@ -124,8 +117,6 @@ LAUNCH_ARGS=(
 [[ -n "${SRCDS_WORKSHOP_AUTHKEY}" && "${SRCDS_WORKSHOP_AUTHKEY}" != "0" ]] && LAUNCH_ARGS+=(-authkey "${SRCDS_WORKSHOP_AUTHKEY}")
 [[ -n "${SRCDS_HOST_WORKSHOP_COLLECTION}" && "${SRCDS_HOST_WORKSHOP_COLLECTION}" != "0" ]] && LAUNCH_ARGS+=(+host_workshop_collection "${SRCDS_HOST_WORKSHOP_COLLECTION}")
 [[ -n "${SRCDS_WORKSHOP_START_MAP}" && "${SRCDS_WORKSHOP_START_MAP}" != "0" ]] && LAUNCH_ARGS+=(+workshop_start_map "${SRCDS_WORKSHOP_START_MAP}")
-
-
 
 if [[ -n "${SRCDS_ADDITIONAL_ARGS}" ]]; then
     for arg in ${SRCDS_ADDITIONAL_ARGS}; do LAUNCH_ARGS+=("$arg"); done

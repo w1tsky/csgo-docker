@@ -8,7 +8,6 @@ WORKDIR ${STEAMCMDDIR}
 ENV STEAMAPPID 740
 ENV STEAMAPP csgo
 ENV STEAMAPPDIR "${HOMEDIR}/${STEAMAPP}-dedicated"
-ENV DLURL https://raw.githubusercontent.com/CM2Walki/CSGO
 
 
 RUN set -x \
