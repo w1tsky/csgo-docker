@@ -1,6 +1,6 @@
 # CS:GO Dedicated Server Docker
 
-Counter-Strike: Global Offensive dedicated server running in Docker with automated builds and releases.
+[Counter-Strike: Global Offensive](https://store.steampowered.com/app/4465480/CounterStrike_Global_Offensive/) dedicated server running in Docker with automated builds and releases.
 
 <img src="https://1000logos.net/wp-content/uploads/2017/12/CSGO-Logo.png" alt="logo" width="300"/></img>
 
@@ -13,7 +13,7 @@ docker run -d --net=host --name=csgo-server \
 ```
 
 **`SRCDS_TOKEN` is required for your server to be listed & reachable.**  
-Generate one here (AppID `730`): [Steam Game Server Account Management](https://steamcommunity.com/dev/managegameservers)
+Generate one here (AppID `4465480`): [Steam Game Server Account Management](https://steamcommunity.com/dev/managegameservers)
 
 ## Usage
 
