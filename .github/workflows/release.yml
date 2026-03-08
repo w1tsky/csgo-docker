@@ -133,6 +133,15 @@ jobs:
     needs: [changes, release, docker-steamcmd]
     if: always() && needs.release.result == 'success'
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - target: bullseye-base
+            image: csgo
+          - target: bullseye-metamod
+            image: csgo-metamod
+          - target: bullseye-sourcemod
+            image: csgo-sourcemod
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -158,17 +167,18 @@ jobs:
             echo "tag=latest" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Build and push csgo
+      - name: Build and push ${{ matrix.image }}
         uses: docker/build-push-action@v5
         with:
           context: .
           file: ./bullseye/Dockerfile
+          target: ${{ matrix.target }}
           push: true
           build-args: |
             BASE_IMAGE=ghcr.io/${{ github.repository_owner }}/steamcmd:${{ steps.steamcmd-tag.outputs.tag }}
           tags: |
-            ghcr.io/${{ github.repository_owner }}/csgo:${{ needs.release.outputs.version }}
-            ghcr.io/${{ github.repository_owner }}/csgo:latest
+            ghcr.io/${{ github.repository_owner }}/${{ matrix.image }}:${{ needs.release.outputs.version }}
+            ghcr.io/${{ github.repository_owner }}/${{ matrix.image }}:latest
           provenance: false
           cache-from: type=gha
           cache-to: type=gha,mode=max

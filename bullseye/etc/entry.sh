@@ -70,20 +70,9 @@ else
 	echo "[STEP 4/7] SourceMod skipped"
 fi
 
-# Install csgo_steamfix for AppID 4465480 compatibility (LD_PRELOAD method)
-# This patches the engine to allow archived CS:GO clients (4465480) to connect
-# See: https://github.com/eonexdev/csgo-sv-fix-engine
-STEAMFIX_SO="${STEAMAPPDIR}/csgo_steamfix.so"
-STEAMFIX_MIN_SIZE=10000  # Should be ~15KB, anything less is corrupted
-echo "[STEP 5/7] Checking for csgo_steamfix (LD_PRELOAD)..."
-STEAMFIX_SIZE=$(stat -c%s "${STEAMFIX_SO}" 2>/dev/null || echo 0)
-if [ "$STEAMFIX_SIZE" -lt "$STEAMFIX_MIN_SIZE" ]; then
-	echo "[STEP 5/7] Installing csgo_steamfix.so (current: ${STEAMFIX_SIZE} bytes)..."
-	curl -sL -o "${STEAMFIX_SO}" "https://github.com/eonexdev/csgo-sv-fix-engine/raw/main/old/csgo_steamfix.so"
-	echo "[STEP 5/7] csgo_steamfix installed ($(stat -c%s "${STEAMFIX_SO}") bytes)"
-else
-	echo "[STEP 5/7] csgo_steamfix already installed (${STEAMFIX_SIZE} bytes)"
-fi
+# Install csgo_steamfix for AppID 4465480 compatibility
+echo "[STEP 5/7] Installing csgo_steamfix..."
+source /etc/install-steamfix.sh "${STEAMAPPDIR}"
 
 # Is the config missing?
 echo "[STEP 6/7] Checking for server.cfg at ${STEAMAPPDIR}/${STEAMAPP}/cfg/server.cfg..."
@@ -138,8 +127,6 @@ if [[ -n "${SRCDS_ADDITIONAL_ARGS}" ]]; then
 fi
 
 echo "  Command: srcds_run ${LAUNCH_ARGS[*]}"
-echo "  LD_PRELOAD: ${STEAMFIX_SO}"
 echo "----------------------------"
 
-export LD_PRELOAD="${STEAMFIX_SO}"
 exec bash "${STEAMAPPDIR}/srcds_run" "${LAUNCH_ARGS[@]}"

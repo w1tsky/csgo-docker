@@ -1,4 +1,4 @@
-FROM ghcr.io/w1tsky/steamcmd:latest
+FROM ghcr.io/w1tsky/steamcmd:latest AS bullseye-base
 
 ENV STEAMAPPID=740 \
 	STEAMAPP=csgo \
@@ -41,3 +41,11 @@ WORKDIR ${HOMEDIR}
 EXPOSE 27015/tcp 27015/udp 27020/udp
 
 CMD ["bash", "entry.sh"]
+
+FROM bullseye-base AS bullseye-metamod
+
+ENV METAMOD_VERSION 1.11
+
+FROM bullseye-metamod AS bullseye-sourcemod
+
+ENV SOURCEMOD_VERSION 1.11
