@@ -31,9 +31,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 	&& rm -rf /var/lib/apt/lists/*
 
 COPY bullseye/etc/entry.sh "${HOMEDIR}/entry.sh"
+COPY bullseye/etc/install-steamfix.sh /etc/install-steamfix.sh
 COPY bullseye/etc/csgo "/etc/csgo"
 
-RUN chmod +x "${HOMEDIR}/entry.sh" && chown -R "${USER}:${USER}" "${HOMEDIR}/entry.sh"
+RUN chmod +x "${HOMEDIR}/entry.sh" /etc/install-steamfix.sh && chown -R "${USER}:${USER}" "${HOMEDIR}/entry.sh"
 
 USER ${USER}
 WORKDIR ${HOMEDIR}
