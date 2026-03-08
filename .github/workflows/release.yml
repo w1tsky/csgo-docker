@@ -21,12 +21,26 @@ permissions:
   packages: write
 
 jobs:
-  release:
+  changes:
     runs-on: ubuntu-latest
     if: |
       github.event_name == 'workflow_dispatch' ||
       (!startsWith(github.event.head_commit.message, 'chore: release') &&
       !contains(github.event.head_commit.message, '[skip ci]'))
+    outputs:
+      steamcmd: ${{ steps.filter.outputs.steamcmd }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            steamcmd:
+              - 'steamcmd/**'
+
+  release:
+    needs: changes
+    runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.version.outputs.version }}
     steps:
@@ -83,7 +97,8 @@ jobs:
           git push origin main --tags
 
   docker-steamcmd:
-    needs: release
+    needs: [changes, release]
+    if: needs.changes.outputs.steamcmd == 'true' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -115,7 +130,8 @@ jobs:
           cache-to: type=gha,mode=max
 
   docker-csgo:
-    needs: [release, docker-steamcmd]
+    needs: [changes, release, docker-steamcmd]
+    if: always() && needs.release.result == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
