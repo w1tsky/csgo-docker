@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  csgo-server:
+    build:
+      context: .
+      dockerfile: bullseye/Dockerfile
+      target: bullseye-base
+    container_name: csgo-server
+    restart: unless-stopped
+    ports:
+      - "27015:27015/tcp"
+      - "27015:27015/udp"
+      - "27020:27020/udp"
+      - "27005:27005/udp"
+    environment:
+      SRCDS_RCONPW: "changeme"
+      SRCDS_PW: "changeme"
+      SRCDS_TOKEN: 0
+      SRCDS_PORT: 27015
+      SRCDS_TV_PORT: 27020
+      SRCDS_CLIENT_PORT: 27005
+      SRCDS_NET_PUBLIC_ADDRESS: 0
+      SRCDS_IP: 0
+      SRCDS_FPSMAX: 128
+      SRCDS_TICKRATE: 128
+      SRCDS_LAN: 0
+      SRCDS_MAXPLAYERS: 10
+      SRCDS_STARTMAP: "de_mirage"
+      SRCDS_REGION: 3
+      SRCDS_MAPGROUP: "mg_active"
+      SRCDS_GAMETYPE: 0
+      SRCDS_GAMEMODE: 1
+      SRCDS_HOSTNAME: "matchmake.site 5vs5 #1"
+      SRCDS_WORKSHOP_START_MAP: 0
+      SRCDS_HOST_WORKSHOP_COLLECTION: 0
+      SRCDS_WORKSHOP_AUTHKEY: ""
+      SRCDS_ADDITIONAL_ARGS: ""
+    volumes:
+      - csgo-data:/root/csgo-dedicated
+    stdin_open: true
+    tty: true
+
+volumes:
+  csgo-data:
+    driver: local
