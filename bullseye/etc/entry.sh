@@ -51,9 +51,9 @@ else
 fi
 
 # Are we in a metamod container and is the metamod folder missing?
-echo "[STEP 3/6] Checking for MetaMod (METAMOD_VERSION=${METAMOD_VERSION:-not set})..."
+echo "[STEP 3/7] Checking for MetaMod (METAMOD_VERSION=${METAMOD_VERSION:-not set})..."
 if  [ ! -z "$METAMOD_VERSION" ] && [ ! -d "${STEAMAPPDIR}/${STEAMAPP}/addons/metamod" ]; then
-	echo "[STEP 3/6] Installing MetaMod ${METAMOD_VERSION}..."
+	echo "[STEP 3/7] Installing MetaMod ${METAMOD_VERSION}..."
 	LATESTMM=$(wget -qO- https://mms.alliedmods.net/mmsdrop/"${METAMOD_VERSION}"/mmsource-latest-linux)
 	wget -qO- https://mms.alliedmods.net/mmsdrop/"${METAMOD_VERSION}"/"${LATESTMM}" | tar xvzf - -C "${STEAMAPPDIR}/${STEAMAPP}"	
 else
@@ -61,30 +61,45 @@ else
 fi
 
 # Are we in a sourcemod container and is the sourcemod folder missing?
-echo "[STEP 4/6] Checking for SourceMod (SOURCEMOD_VERSION=${SOURCEMOD_VERSION:-not set})..."
+echo "[STEP 4/7] Checking for SourceMod (SOURCEMOD_VERSION=${SOURCEMOD_VERSION:-not set})..."
 if  [ ! -z "$SOURCEMOD_VERSION" ] && [ ! -d "${STEAMAPPDIR}/${STEAMAPP}/addons/sourcemod" ]; then
-	echo "[STEP 4/6] Installing SourceMod ${SOURCEMOD_VERSION}..."
+	echo "[STEP 4/7] Installing SourceMod ${SOURCEMOD_VERSION}..."
 	LATESTSM=$(wget -qO- https://sm.alliedmods.net/smdrop/"${SOURCEMOD_VERSION}"/sourcemod-latest-linux)
 	wget -qO- https://sm.alliedmods.net/smdrop/"${SOURCEMOD_VERSION}"/"${LATESTSM}" | tar xvzf - -C "${STEAMAPPDIR}/${STEAMAPP}"
 else
-	echo "[STEP 4/6] SourceMod skipped"
+	echo "[STEP 4/7] SourceMod skipped"
+fi
+
+# Install csgo_steamfix extension for AppID 4465480 compatibility
+# This patches the engine to allow archived CS:GO clients (4465480) to connect
+# See: https://github.com/eonexdev/csgo-sv-fix-engine
+STEAMFIX_EXT="${STEAMAPPDIR}/${STEAMAPP}/addons/sourcemod/extensions/csgo_steamfix.ext.so"
+echo "[STEP 5/7] Checking for csgo_steamfix extension..."
+if [ ! -z "$SOURCEMOD_VERSION" ] && [ -d "${STEAMAPPDIR}/${STEAMAPP}/addons/sourcemod" ] && [ ! -f "${STEAMFIX_EXT}" ]; then
+	echo "[STEP 5/7] Installing csgo_steamfix extension..."
+	mkdir -p "${STEAMAPPDIR}/${STEAMAPP}/addons/sourcemod/extensions"
+	wget -qO "${STEAMFIX_EXT}" "https://github.com/eonexdev/csgo-sv-fix-engine/releases/latest/download/csgo_steamfix.ext.so"
+	touch "${STEAMAPPDIR}/${STEAMAPP}/addons/sourcemod/extensions/csgo_steamfix.autoload"
+	echo "[STEP 5/7] csgo_steamfix installed"
+else
+	echo "[STEP 5/7] csgo_steamfix skipped (already exists or SourceMod not installed)"
 fi
 
 # Is the config missing?
-echo "[STEP 5/6] Checking for server.cfg at ${STEAMAPPDIR}/${STEAMAPP}/cfg/server.cfg..."
+echo "[STEP 6/7] Checking for server.cfg at ${STEAMAPPDIR}/${STEAMAPP}/cfg/server.cfg..."
 if [ ! -f "${STEAMAPPDIR}/${STEAMAPP}/cfg/server.cfg" ]; then
-	echo "[STEP 5/6] server.cfg not found, copying baked-in configs..."
+	echo "[STEP 6/7] server.cfg not found, copying baked-in configs..."
 	cp -r /etc/csgo/* "${STEAMAPPDIR}/${STEAMAPP}/cfg"
 	sed -i -e 's/{{SERVER_HOSTNAME}}/'"${SRCDS_HOSTNAME}"'/g' "${STEAMAPPDIR}/${STEAMAPP}/cfg/server.cfg"
-	echo "[STEP 5/6] Configs copied and hostname set to: ${SRCDS_HOSTNAME}"
+	echo "[STEP 6/7] Configs copied and hostname set to: ${SRCDS_HOSTNAME}"
 else
-	echo "[STEP 5/6] server.cfg already exists, skipping copy"
+	echo "[STEP 6/7] server.cfg already exists, skipping copy"
 fi
 
 # Believe it or not, if you don't do this srcds_run shits itself
 cd "${STEAMAPPDIR}"
 
-echo "[STEP 6/6] Launching srcds_run..."
+echo "[STEP 7/7] Launching srcds_run..."
 echo "----------------------------"
 
 LAUNCH_ARGS=(
