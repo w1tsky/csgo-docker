@@ -41,14 +41,6 @@ else
 	echo "[STEP 2.6/7] ${STEAM_INF} not found, skipping patch"
 fi
 
-# Patch steam_appid.txt to match the legacy standalone appID
-STEAM_APPID_TXT="${STEAMAPPDIR}/steam_appid.txt"
-if [ -f "${STEAM_APPID_TXT}" ]; then
-	echo "[STEP 2.7/7] Patching ${STEAM_APPID_TXT}: 730 -> 4465480"
-	echo "4465480" > "${STEAM_APPID_TXT}"
-else
-	echo "[STEP 2.7/7] ${STEAM_APPID_TXT} not found, skipping patch"
-fi
 
 # Are we in a metamod container and is the metamod folder missing?
 echo "[STEP 3/7] Checking for MetaMod (METAMOD_VERSION=${METAMOD_VERSION:-not set})..."
