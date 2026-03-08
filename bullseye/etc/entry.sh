@@ -6,20 +6,20 @@ echo "[ENTRY] STEAMAPPDIR=${STEAMAPPDIR}"
 echo "[ENTRY] STEAMAPP=${STEAMAPP}"
 echo "========================================"
 
-echo "[STEP 1/6] Creating app directory: ${STEAMAPPDIR}"
+echo "[STEP 1/7] Creating app directory: ${STEAMAPPDIR}"
 mkdir -p "${STEAMAPPDIR}" || true  
 
-echo "[STEP 2/6] Running steamcmd update for app ${STEAMAPPID}..."
+echo "[STEP 2/7] Running steamcmd update for app ${STEAMAPPID}..."
 bash "${STEAMCMDDIR}/steamcmd.sh" +force_install_dir "${STEAMAPPDIR}" \
 				+login anonymous \
 				+app_update "${STEAMAPPID}" \
 				+quit
-echo "[STEP 2/6] steamcmd update finished (exit code: $?)"
+echo "[STEP 2/7] steamcmd update finished (exit code: $?)"
 
 # Create steamcmd update script for autoupdate if it doesn't exist
 UPDATE_TXT="${HOMEDIR}/${STEAMAPP}_update.txt"
 if [ ! -f "${UPDATE_TXT}" ]; then
-	echo "[STEP 2.5/6] Creating ${UPDATE_TXT} for autoupdate..."
+	echo "[STEP 2.5/7] Creating ${UPDATE_TXT} for autoupdate..."
 	{
 		echo '@ShutdownOnFailedCommand 1'
 		echo '@NoPromptForPassword 1'
@@ -29,25 +29,25 @@ if [ ! -f "${UPDATE_TXT}" ]; then
 		echo 'quit'
 	} > "${UPDATE_TXT}"
 else
-	echo "[STEP 2.5/6] ${UPDATE_TXT} already exists, skipping"
+	echo "[STEP 2.5/7] ${UPDATE_TXT} already exists, skipping"
 fi
 
 # Patch steam.inf to use the legacy standalone appID
 STEAM_INF="${STEAMAPPDIR}/${STEAMAPP}/steam.inf"
 if [ -f "${STEAM_INF}" ]; then
-	echo "[STEP 2.6/6] Patching ${STEAM_INF}: appID=730 -> appID=4465480"
+	echo "[STEP 2.6/7] Patching ${STEAM_INF}: appID=730 -> appID=4465480"
 	sed -i 's/^appID=730/appID=4465480/' "${STEAM_INF}"
 else
-	echo "[STEP 2.6/6] ${STEAM_INF} not found, skipping patch"
+	echo "[STEP 2.6/7] ${STEAM_INF} not found, skipping patch"
 fi
 
 # Patch steam_appid.txt to match the legacy standalone appID
 STEAM_APPID_TXT="${STEAMAPPDIR}/steam_appid.txt"
 if [ -f "${STEAM_APPID_TXT}" ]; then
-	echo "[STEP 2.7/6] Patching ${STEAM_APPID_TXT}: 730 -> 4465480"
+	echo "[STEP 2.7/7] Patching ${STEAM_APPID_TXT}: 730 -> 4465480"
 	echo "4465480" > "${STEAM_APPID_TXT}"
 else
-	echo "[STEP 2.7/6] ${STEAM_APPID_TXT} not found, skipping patch"
+	echo "[STEP 2.7/7] ${STEAM_APPID_TXT} not found, skipping patch"
 fi
 
 # Are we in a metamod container and is the metamod folder missing?
@@ -57,7 +57,7 @@ if  [ ! -z "$METAMOD_VERSION" ] && [ ! -d "${STEAMAPPDIR}/${STEAMAPP}/addons/met
 	LATESTMM=$(wget -qO- https://mms.alliedmods.net/mmsdrop/"${METAMOD_VERSION}"/mmsource-latest-linux)
 	wget -qO- https://mms.alliedmods.net/mmsdrop/"${METAMOD_VERSION}"/"${LATESTMM}" | tar xvzf - -C "${STEAMAPPDIR}/${STEAMAPP}"	
 else
-	echo "[STEP 3/6] MetaMod skipped"
+	echo "[STEP 3/7] MetaMod skipped"
 fi
 
 # Are we in a sourcemod container and is the sourcemod folder missing?
