@@ -74,15 +74,21 @@ fi
 # This patches the engine to allow archived CS:GO clients (4465480) to connect
 # See: https://github.com/eonexdev/csgo-sv-fix-engine
 STEAMFIX_EXT="${STEAMAPPDIR}/${STEAMAPP}/addons/sourcemod/extensions/csgo_steamfix.ext.so"
+STEAMFIX_MIN_SIZE=10000  # Extension should be ~27KB, anything less is corrupted
 echo "[STEP 5/7] Checking for csgo_steamfix extension..."
-if [ ! -z "$SOURCEMOD_VERSION" ] && [ -d "${STEAMAPPDIR}/${STEAMAPP}/addons/sourcemod" ] && [ ! -s "${STEAMFIX_EXT}" ]; then
-	echo "[STEP 5/7] Installing csgo_steamfix extension..."
-	mkdir -p "${STEAMAPPDIR}/${STEAMAPP}/addons/sourcemod/extensions"
-	curl -sL -o "${STEAMFIX_EXT}" "https://github.com/eonexdev/csgo-sv-fix-engine/raw/main/csgo_steamfix.ext.so"
-	touch "${STEAMAPPDIR}/${STEAMAPP}/addons/sourcemod/extensions/csgo_steamfix.autoload"
-	echo "[STEP 5/7] csgo_steamfix installed ($(stat -c%s "${STEAMFIX_EXT}") bytes)"
+if [ ! -z "$SOURCEMOD_VERSION" ] && [ -d "${STEAMAPPDIR}/${STEAMAPP}/addons/sourcemod" ]; then
+	STEAMFIX_SIZE=$(stat -c%s "${STEAMFIX_EXT}" 2>/dev/null || echo 0)
+	if [ "$STEAMFIX_SIZE" -lt "$STEAMFIX_MIN_SIZE" ]; then
+		echo "[STEP 5/7] Installing csgo_steamfix extension (current: ${STEAMFIX_SIZE} bytes)..."
+		mkdir -p "${STEAMAPPDIR}/${STEAMAPP}/addons/sourcemod/extensions"
+		curl -sL -o "${STEAMFIX_EXT}" "https://github.com/eonexdev/csgo-sv-fix-engine/raw/main/csgo_steamfix.ext.so"
+		touch "${STEAMAPPDIR}/${STEAMAPP}/addons/sourcemod/extensions/csgo_steamfix.autoload"
+		echo "[STEP 5/7] csgo_steamfix installed ($(stat -c%s "${STEAMFIX_EXT}") bytes)"
+	else
+		echo "[STEP 5/7] csgo_steamfix already installed (${STEAMFIX_SIZE} bytes)"
+	fi
 else
-	echo "[STEP 5/7] csgo_steamfix skipped (already exists or SourceMod not installed)"
+	echo "[STEP 5/7] csgo_steamfix skipped (SourceMod not installed)"
 fi
 
 # Is the config missing?
