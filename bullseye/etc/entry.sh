@@ -56,11 +56,15 @@ if  [ ! -z "$METAMOD_VERSION" ] && [ ! -d "${STEAMAPPDIR}/${STEAMAPP}/addons/met
 	echo "[STEP 3/7] Installing MetaMod ${METAMOD_VERSION}..."
 	LATESTMM=$(wget -qO- https://mms.alliedmods.net/mmsdrop/"${METAMOD_VERSION}"/mmsource-latest-linux)
 	wget -qO- https://mms.alliedmods.net/mmsdrop/"${METAMOD_VERSION}"/"${LATESTMM}" | tar xvzf - -C "${STEAMAPPDIR}/${STEAMAPP}"
-	# Remove 64-bit binaries - CS:GO server is 32-bit
-	rm -rf "${STEAMAPPDIR}/${STEAMAPP}/addons/metamod/bin/linux64"
-	rm -f "${STEAMAPPDIR}/${STEAMAPP}/addons/metamod_x64.vdf"
 else
 	echo "[STEP 3/7] MetaMod skipped"
+fi
+
+# Always remove 64-bit MetaMod binaries - CS:GO server is 32-bit only
+if [ -d "${STEAMAPPDIR}/${STEAMAPP}/addons/metamod/bin/linux64" ]; then
+	echo "[STEP 3.1/7] Removing 64-bit MetaMod binaries..."
+	rm -rf "${STEAMAPPDIR}/${STEAMAPP}/addons/metamod/bin/linux64"
+	rm -f "${STEAMAPPDIR}/${STEAMAPP}/addons/metamod_x64.vdf"
 fi
 
 # Are we in a sourcemod container and is the sourcemod folder missing?
