@@ -78,7 +78,7 @@ echo "[STEP 5/7] Checking for csgo_steamfix extension..."
 if [ ! -z "$SOURCEMOD_VERSION" ] && [ -d "${STEAMAPPDIR}/${STEAMAPP}/addons/sourcemod" ] && [ ! -s "${STEAMFIX_EXT}" ]; then
 	echo "[STEP 5/7] Installing csgo_steamfix extension..."
 	mkdir -p "${STEAMAPPDIR}/${STEAMAPP}/addons/sourcemod/extensions"
-	curl -sL -o "${STEAMFIX_EXT}" "https://github.com/eonexdev/csgo-sv-fix-engine/releases/latest/download/csgo_steamfix.ext.so"
+	curl -sL -o "${STEAMFIX_EXT}" "https://github.com/eonexdev/csgo-sv-fix-engine/raw/main/csgo_steamfix.ext.so"
 	touch "${STEAMAPPDIR}/${STEAMAPP}/addons/sourcemod/extensions/csgo_steamfix.autoload"
 	echo "[STEP 5/7] csgo_steamfix installed ($(stat -c%s "${STEAMFIX_EXT}") bytes)"
 else
