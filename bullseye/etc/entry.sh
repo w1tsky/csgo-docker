@@ -114,6 +114,7 @@ LAUNCH_ARGS=(
     +sv_setsteamaccount "${SRCDS_TOKEN}"
     +sv_region "${SRCDS_REGION}"
     +sv_lan "${SRCDS_LAN}"
+    +hostname "${SRCDS_HOSTNAME}"
 )
 
 # Add optional arguments only if they are not empty/zero
