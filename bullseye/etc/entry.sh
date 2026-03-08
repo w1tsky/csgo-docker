@@ -71,7 +71,8 @@ echo "[STEP 6/7] Checking for server.cfg at ${STEAMAPPDIR}/${STEAMAPP}/cfg/serve
 if [ ! -f "${STEAMAPPDIR}/${STEAMAPP}/cfg/server.cfg" ]; then
 	echo "[STEP 6/7] server.cfg not found, copying baked-in configs..."
 	cp -r /etc/csgo/* "${STEAMAPPDIR}/${STEAMAPP}/cfg"
-	echo "[STEP 6/7] Configs copied"
+	sed -i -e 's/{{SERVER_HOSTNAME}}/'"${SRCDS_HOSTNAME}"'/g' "${STEAMAPPDIR}/${STEAMAPP}/cfg/server.cfg"
+	echo "[STEP 6/7] Configs copied, hostname set to: ${SRCDS_HOSTNAME}"
 else
 	echo "[STEP 6/7] server.cfg already exists, skipping copy"
 fi
@@ -102,7 +103,6 @@ LAUNCH_ARGS=(
     +sv_setsteamaccount "${SRCDS_TOKEN}"
     +sv_region "${SRCDS_REGION}"
     +sv_lan "${SRCDS_LAN}"
-    +hostname "${SRCDS_HOSTNAME}"
 )
 
 # Add optional arguments only if they are not empty/zero
