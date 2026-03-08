@@ -82,8 +82,7 @@ echo "[STEP 6/7] Checking for server.cfg at ${STEAMAPPDIR}/${STEAMAPP}/cfg/serve
 if [ ! -f "${STEAMAPPDIR}/${STEAMAPP}/cfg/server.cfg" ]; then
 	echo "[STEP 6/7] server.cfg not found, copying baked-in configs..."
 	cp -r /etc/csgo/* "${STEAMAPPDIR}/${STEAMAPP}/cfg"
-	sed -i -e 's/{{SERVER_HOSTNAME}}/'"${SRCDS_HOSTNAME}"'/g' "${STEAMAPPDIR}/${STEAMAPP}/cfg/server.cfg"
-	echo "[STEP 6/7] Configs copied and hostname set to: ${SRCDS_HOSTNAME}"
+	echo "[STEP 6/7] Configs copied"
 else
 	echo "[STEP 6/7] server.cfg already exists, skipping copy"
 fi
