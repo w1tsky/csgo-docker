@@ -26,7 +26,7 @@ ENV STEAMAPPID=740 \
 	SRCDS_ADDITIONAL_ARGS=""
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-	wget ca-certificates lib32z1 curl \
+	wget ca-certificates lib32z1 curl unzip \
 	&& rm -rf /var/lib/apt/lists/*
 
 COPY bullseye/etc/entry.sh "${HOMEDIR}/entry.sh"
