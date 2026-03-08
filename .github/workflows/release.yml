@@ -149,6 +149,15 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Determine steamcmd tag
+        id: steamcmd-tag
+        run: |
+          if [[ "${{ needs.docker-steamcmd.result }}" == "success" ]]; then
+            echo "tag=${{ needs.release.outputs.version }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=latest" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Build and push csgo
         uses: docker/build-push-action@v5
         with:
@@ -156,7 +165,7 @@ jobs:
           file: ./bullseye/Dockerfile
           push: true
           build-args: |
-            BASE_IMAGE=ghcr.io/${{ github.repository_owner }}/steamcmd:${{ needs.release.outputs.version }}
+            BASE_IMAGE=ghcr.io/${{ github.repository_owner }}/steamcmd:${{ steps.steamcmd-tag.outputs.tag }}
           tags: |
             ghcr.io/${{ github.repository_owner }}/csgo:${{ needs.release.outputs.version }}
             ghcr.io/${{ github.repository_owner }}/csgo:latest

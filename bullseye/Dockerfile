@@ -1,5 +1,4 @@
-ARG BASE_IMAGE=ghcr.io/w1tsky/steamcmd:latest
-FROM ${BASE_IMAGE}
+FROM ghcr.io/w1tsky/steamcmd:latest
 
 ENV STEAMAPPID=740 \
 	STEAMAPP=csgo \
